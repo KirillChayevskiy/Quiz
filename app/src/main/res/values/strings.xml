@@ -5,6 +5,8 @@
     <string name="wrong">wrong</string>
     <string name="correctly">correctly</string>
 
+    <string name="banner_ad_unit_id">ca-app-pub-3940256099942544/6300978111</string>
+
     <string-array name="flag_names">
         <item>afghanistan</item>
         <item>albania</item>

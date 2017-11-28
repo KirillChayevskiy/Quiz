@@ -1,26 +1,24 @@
 package company.kch.quiz;
 
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.AssetManager;
-import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Handler;
-import android.os.LocaleList;
 import android.support.annotation.RequiresApi;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -31,15 +29,13 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 import java.util.Random;
-import java.util.Set;
+
 
 public class TabbedActivity extends AppCompatActivity {
 
@@ -48,7 +44,7 @@ public class TabbedActivity extends AppCompatActivity {
 
     static TabLayout tabLayout;
 
-
+    static int countRightAnswer = 0;
     static List<String> allFileNameList = new ArrayList<>();
     static List<String> allFlagsList = new ArrayList<>();
 
@@ -58,13 +54,18 @@ public class TabbedActivity extends AppCompatActivity {
     static List<String> randomizedFileNameList = new ArrayList<>();
     static List<String> randomizedFlagsList = new ArrayList<>();
 
-
+    static AlertDialog.Builder builder;
     static boolean[] ready = new boolean[10];
     static boolean[] rightAnswer = new boolean[10];
 
+    static Intent intent;
 
     static int[] randomAnswerNum = new int[10];
     static int[] answerNum = new int[10];
+
+    static int loadNum;
+
+    final String SAVED_NUM = "saved_num";
 
 
     @RequiresApi(api = Build.VERSION_CODES.N)
@@ -73,9 +74,23 @@ public class TabbedActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tabbed);
 
+        //сброс
+        for (int i = 0; i < 10; i++) {
+            ready[i] = false;
+        }
 
+        intent = new Intent(TabbedActivity.this, MainActivity.class);
+        builder = new AlertDialog.Builder(TabbedActivity.this);
 
         allFileNameList.clear();
+        allFileNameListFull.clear();
+        allFlagsList.clear();
+        allFlagsListFull.clear();
+        randomizedFileNameList.clear();
+        randomizedFlagsList.clear();
+
+
+        loadNum = getIntent().getIntExtra(SAVED_NUM, 8);
 
         AssetManager assetManager = getApplicationContext().getAssets();
 
@@ -90,17 +105,17 @@ public class TabbedActivity extends AppCompatActivity {
         Collections.addAll(allFlagsListFull, getResources().getStringArray(R.array.flag_names));
 
 
-        randomizedFileNameList.clear();
+
         Random random = new Random();
         for (int i = 0; i < 10; i++) {
-            for (int j = 0; j < 8; j++){
+            for (int j = 0; j < loadNum; j++){
                 int rand = random.nextInt(allFileNameList.size());
                 randomizedFileNameList.add(allFileNameList.get(rand));
                 randomizedFlagsList.add(allFlagsList.get(rand));
                 allFileNameList.remove(rand);
                 allFlagsList.remove(rand);
             }
-            randomAnswerNum[i] = random.nextInt(8);
+            randomAnswerNum[i] = random.nextInt(loadNum);
         }
 
 
@@ -179,6 +194,15 @@ public class TabbedActivity extends AppCompatActivity {
             button.getBackground().setColorFilter(Color.parseColor(color), PorterDuff.Mode.MULTIPLY);
         }
 
+        public boolean checkReady(){
+            for (boolean b : ready) {
+                if (!b) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
@@ -187,7 +211,34 @@ public class TabbedActivity extends AppCompatActivity {
             final Button[] button = new Button[8];
 
             int[] btn = new int[]{R.id.button0, R.id.button1, R.id.button2, R.id.button3, R.id.button4, R.id.button5, R.id.button6, R.id.button7};
-
+            for (int i = 0; i < 8; i++) {
+                button[i] = (Button) rootView.findViewById(btn[i]);
+            }
+            switch (loadNum) {
+                case 6:
+                    button[0].setVisibility(View.GONE);
+                    button[1].setVisibility(View.GONE);
+                    btn = new int[]{R.id.button2, R.id.button3, R.id.button4, R.id.button5, R.id.button6, R.id.button7};
+                    break;
+                case 4:
+                    button[0].setVisibility(View.GONE);
+                    button[2].setVisibility(View.GONE);
+                    button[4].setVisibility(View.GONE);
+                    button[6].setVisibility(View.GONE);
+                    btn = new int[]{R.id.button1, R.id.button3, R.id.button5, R.id.button7};
+                    break;
+                case 2:
+                    button[0].setVisibility(View.GONE);
+                    button[1].setVisibility(View.GONE);
+                    button[2].setVisibility(View.GONE);
+                    button[3].setVisibility(View.GONE);
+                    button[4].setVisibility(View.GONE);
+                    button[6].setVisibility(View.GONE);
+                    button[5].setTextSize(25);
+                    button[7].setTextSize(25);
+                    btn = new int[]{R.id.button5, R.id.button7};
+                    break;
+            }
             ImageView imageView = (ImageView) rootView.findViewById(R.id.imageView);
 
 
@@ -195,9 +246,9 @@ public class TabbedActivity extends AppCompatActivity {
 
             final Handler handler = new Handler();
 
-            for (int i = 0; i < 8; i++){
+            for (int i = 0; i < loadNum; i++){
                 button[i] = (Button) rootView.findViewById(btn[i]);
-                button[i].setText(randomizedFlagsList.get((getArguments().getInt(ARG_SECTION_NUMBER) - 1) * 8 + i));
+                button[i].setText(randomizedFlagsList.get((getArguments().getInt(ARG_SECTION_NUMBER) - 1) * loadNum + i));
 
                 final int finalI = i;
 
@@ -210,6 +261,7 @@ public class TabbedActivity extends AppCompatActivity {
                             rightAnswer[getArguments().getInt(ARG_SECTION_NUMBER) - 1] = true;
                             tabLayout.getTabAt(getArguments().getInt(ARG_SECTION_NUMBER) - 1).setIcon(R.drawable.ic_tab_yes);
                             tabLayout.getTabAt(getArguments().getInt(ARG_SECTION_NUMBER) - 1).setText("");
+                            countRightAnswer++;
                         } else {
                             colorizeButton(button[finalI], "#F44336");
                             colorizeButton(button[randomAnswerNum[getArguments().getInt(ARG_SECTION_NUMBER) - 1]], "#4CAF50");
@@ -219,7 +271,7 @@ public class TabbedActivity extends AppCompatActivity {
                             tabLayout.getTabAt(getArguments().getInt(ARG_SECTION_NUMBER) - 1).setText("");
                         }
                         ready[getArguments().getInt(ARG_SECTION_NUMBER) - 1] = true;
-                        for (int i = 0; i < 8; i++) {
+                        for (int i = 0; i < loadNum; i++) {
                             button[i].setEnabled(false);
                         }
                         handler.postDelayed(new Runnable() {
@@ -228,7 +280,23 @@ public class TabbedActivity extends AppCompatActivity {
                                     {
                                         mViewPager.setCurrentItem(getArguments().getInt(ARG_SECTION_NUMBER));
                                     }
-                        }, 1500);
+                        }, 1200);
+
+
+                        if (checkReady()) {
+                            builder.setTitle("Результат")
+                                    .setMessage("Правильных ответов: " + countRightAnswer+ "\n")
+                                    .setCancelable(false)
+                                    .setNegativeButton("OK",
+                                            new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    startActivity(intent);
+                                                }
+                                            });
+                            AlertDialog alertDialog = builder.create();
+                            alertDialog.show();
+                        }
                     }
                 };
                 button[i].getId();
@@ -236,7 +304,7 @@ public class TabbedActivity extends AppCompatActivity {
             }
 
             if (ready[getArguments().getInt(ARG_SECTION_NUMBER) - 1]) {
-                for (int i = 0; i < 8; i++) {
+                for (int i = 0; i < loadNum; i++) {
                     button[i].setEnabled(false);
                 }
 
@@ -257,10 +325,6 @@ public class TabbedActivity extends AppCompatActivity {
                     break;
                 }
             }
-
-            TextView textView = (TextView) rootView.findViewById(R.id.textView);
-            textView.setText((button[randomAnswerNum[getArguments().getInt(ARG_SECTION_NUMBER) - 1]]).getText());
-            textView.setVisibility(View.INVISIBLE);
             return rootView;
         }
 
