@@ -4,7 +4,8 @@
     android:id="@+id/constraintLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="company.kch.quiz.TabbedActivity$PlaceholderFragment">
+    tools:context="company.kch.quiz.TabbedActivity$PlaceholderFragment"
+    tools:layout_editor_absoluteY="25dp">
 
     <Button
         android:id="@+id/button0"
@@ -122,10 +123,12 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
         android:src="@android:drawable/sym_def_app_icon"
         app:layout_constraintBottom_toTopOf="@+id/guideline"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
