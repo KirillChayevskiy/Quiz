@@ -2,7 +2,6 @@ package company.kch.quiz;
 
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.res.AssetManager;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
@@ -27,7 +26,6 @@ import android.view.ViewGroup;
 
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -44,7 +42,7 @@ public class TabbedActivity extends AppCompatActivity {
 
     static TabLayout tabLayout;
 
-    static int countRightAnswer = 0;
+    static int countRightAnswer;
     static List<String> allFileNameList = new ArrayList<>();
     static List<String> allFlagsList = new ArrayList<>();
 
@@ -78,6 +76,7 @@ public class TabbedActivity extends AppCompatActivity {
         for (int i = 0; i < 10; i++) {
             ready[i] = false;
         }
+        countRightAnswer = 0;
 
         intent = new Intent(TabbedActivity.this, MainActivity.class);
         builder = new AlertDialog.Builder(TabbedActivity.this);
@@ -152,9 +151,14 @@ public class TabbedActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+    }
 
-
-
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putStringArrayList("allFileNameList", (ArrayList<String>) allFileNameList);
+    }
 
 
 
