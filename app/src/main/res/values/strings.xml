@@ -7,204 +7,225 @@
 
     <string name="banner_ad_unit_id">ca-app-pub-3940256099942544/6300978111</string>
 
-    <string-array name="flag_names">
-        <item>afghanistan</item>
+    <string-array name="europe_flags">
         <item>albania</item>
-        <item>algeria</item>
         <item>andorra</item>
-        <item>angola</item>
-        <item>antigua and barbuda</item>
-        <item>argentina</item>
-        <item>armenia</item>
-        <item>australia</item>
         <item>austria</item>
-        <item>azerbaijan</item>
-        <item>bahamas</item>
-        <item>bahrain</item>
-        <item>bangladesh</item>
-        <item>barbados</item>
         <item>belarus</item>
         <item>belgium</item>
-        <item>belize</item>
-        <item>benin</item>
-        <item>bhutan</item>
-        <item>bolivia</item>
         <item>bosnia and herzegovina</item>
-        <item>botswana</item>
-        <item>brazil</item>
-        <item>brunei</item>
         <item>bulgaria</item>
-        <item>burkina faso</item>
-        <item>burundi</item>
-        <item>cambodia</item>
-        <item>cameroon</item>
-        <item>canada</item>
-        <item>cape verde</item>
-        <item>central african republic</item>
-        <item>chad</item>
-        <item>chile</item>
-        <item>china</item>
-        <item>colombia</item>
-        <item>comoros</item>
-        <item>congo democratic republic</item>
-        <item>congo republic</item>
-        <item>costa rica</item>
-        <item>cote d ivoire</item>
         <item>croatia</item>
-        <item>cuba</item>
-        <item>cyprus</item>
         <item>czech republic</item>
         <item>denmark</item>
-        <item>djibouti</item>
-        <item>dominica</item>
-        <item>dominican republic</item>
-        <item>east timor</item>
-        <item>ecuador</item>
-        <item>egypt</item>
-        <item>el salvador</item>
-        <item>equatorial guinea</item>
-        <item>eritrea</item>
         <item>estonia</item>
-        <item>ethiopia</item>
-        <item>fiji</item>
         <item>finland</item>
         <item>france</item>
-        <item>gabon</item>
-        <item>gambia</item>
         <item>georgia</item>
         <item>germany</item>
-        <item>ghana</item>
         <item>greece</item>
-        <item>grenada</item>
-        <item>guatemala</item>
-        <item>guinea bissau</item>
-        <item>guinea</item>
-        <item>guyana</item>
-        <item>haiti</item>
-        <item>honduras</item>
         <item>hungary</item>
         <item>iceland</item>
-        <item>india</item>
-        <item>indonesia</item>
-        <item>iran</item>
-        <item>iraq</item>
         <item>ireland</item>
-        <item>israel</item>
         <item>italy</item>
-        <item>jamaica</item>
-        <item>japan</item>
-        <item>jordan</item>
-        <item>kazakhstan</item>
-        <item>kenya</item>
-        <item>kiribati</item>
         <item>kosovo</item>
-        <item>kuwait</item>
-        <item>kyrgyzstan</item>
-        <item>laos</item>
         <item>latvia</item>
-        <item>lebanon</item>
-        <item>lesotho</item>
-        <item>liberia</item>
-        <item>libya</item>
         <item>liechtenstein</item>
         <item>lithuania</item>
         <item>luxembourg</item>
         <item>macedonia</item>
-        <item>madagascar</item>
-        <item>malawi</item>
-        <item>malaysia</item>
-        <item>maldives</item>
-        <item>mali</item>
         <item>malta</item>
-        <item>marshall islands</item>
-        <item>mauritania</item>
-        <item>mauritius</item>
-        <item>mexico</item>
-        <item>micronesia</item>
         <item>moldova</item>
         <item>monaco</item>
-        <item>mongolia</item>
         <item>montenegro</item>
-        <item>morocco</item>
-        <item>mozambique</item>
-        <item>myanmar</item>
-        <item>namibia</item>
-        <item>nauru</item>
-        <item>nepal</item>
         <item>netherlands</item>
-        <item>new zealand</item>
-        <item>nicaragua</item>
-        <item>niger</item>
-        <item>nigeria</item>
-        <item>niue</item>
-        <item>north korea</item>
         <item>norway</item>
-        <item>oman</item>
-        <item>pakistan</item>
-        <item>palau</item>
-        <item>panama</item>
-        <item>papua new guinea</item>
-        <item>paraguay</item>
-        <item>peru</item>
-        <item>philippines</item>
         <item>poland</item>
         <item>portugal</item>
-        <item>qatar</item>
         <item>romania</item>
-        <item>russia</item>
-        <item>rwanda</item>
-        <item>saint kitts and nevis</item>
-        <item>saint lucia</item>
-        <item>saint vincent and the grenadines</item>
-        <item>samoa</item>
         <item>san marino</item>
-        <item>sao tome and principe</item>
-        <item>saudi arabia</item>
-        <item>senegal</item>
         <item>serbia</item>
-        <item>seychelles</item>
-        <item>sierra leone</item>
-        <item>singapore</item>
         <item>slovakia</item>
         <item>slovenia</item>
-        <item>solomon islands</item>
-        <item>somalia</item>
-        <item>south africa</item>
-        <item>south korea</item>
-        <item>south sudan</item>
         <item>spain</item>
-        <item>sri lanka</item>
-        <item>sudan</item>
-        <item>suriname</item>
-        <item>swaziland</item>
         <item>sweden</item>
         <item>switzerland</item>
+        <item>ukraine</item>
+        <item>united kingdom</item>
+        <item>vatican city</item>
+    </string-array>
+
+    <string-array name="asia_flags">
+        <item>afghanistan</item>
+        <item>armenia</item>
+        <item>azerbaijan</item>
+        <item>bahrain</item>
+        <item>bangladesh</item>
+        <item>bhutan</item>
+        <item>brunei</item>
+        <item>cambodia</item>
+        <item>china</item>
+        <item>india</item>
+        <item>indonesia</item>
+        <item>iran</item>
+        <item>iraq</item>
+        <item>israel</item>
+        <item>japan</item>
+        <item>jordan</item>
+        <item>kazakhstan</item>
+        <item>kuwait</item>
+        <item>kyrgyzstan</item>
+        <item>laos</item>
+        <item>lebanon</item>
+        <item>malaysia</item>
+        <item>maldives</item>
+        <item>mongolia</item>
+        <item>myanmar</item>
+        <item>nepal</item>
+        <item>north korea</item>
+        <item>oman</item>
+        <item>pakistan</item>
+        <item>philippines</item>
+        <item>qatar</item>
+        <item>saudi arabia</item>
+        <item>singapore</item>
+        <item>south korea</item>
+        <item>sri lanka</item>
         <item>syria</item>
         <item>taiwan</item>
         <item>tajikistan</item>
-        <item>tanzania</item>
         <item>thailand</item>
-        <item>togo</item>
-        <item>tonga</item>
-        <item>trinidad and tobago</item>
-        <item>tunisia</item>
         <item>turkey</item>
         <item>turkmenistan</item>
-        <item>tuvalu</item>
-        <item>uganda</item>
-        <item>ukraine</item>
         <item>united arab emirates</item>
-        <item>united kingdom</item>
-        <item>united states of america</item>
-        <item>uruguay</item>
         <item>uzbekistan</item>
-        <item>vatican city</item>
-        <item>venezuela</item>
         <item>vietnam</item>
         <item>yemen</item>
+    </string-array>
+
+    <string-array name="africa_flags">
+        <item>algeria</item>
+        <item>angola</item>
+        <item>benin</item>
+        <item>botswana</item>
+        <item>burkina faso</item>
+        <item>burundi</item>
+        <item>cameroon</item>
+        <item>cape verde</item>
+        <item>central african republic</item>
+        <item>chad</item>
+        <item>comoros</item>
+        <item>congo democratic republic</item>
+        <item>congo republic</item>
+        <item>cote d ivoire</item>
+        <item>djibouti</item>
+        <item>egypt</item>
+        <item>equatorial guinea</item>
+        <item>eritrea</item>
+        <item>ethiopia</item>
+        <item>gabon</item>
+        <item>gambia</item>
+        <item>ghana</item>
+        <item>guinea bissau</item>
+        <item>guinea</item>
+        <item>kenya</item>
+        <item>lesotho</item>
+        <item>liberia</item>
+        <item>libya</item>
+        <item>madagascar</item>
+        <item>malawi</item>
+        <item>mali</item>
+        <item>mauritania</item>
+        <item>mauritius</item>
+        <item>morocco</item>
+        <item>mozambique</item>
+        <item>namibia</item>
+        <item>niger</item>
+        <item>nigeria</item>
+        <item>rwanda</item>
+        <item>sao tome and principe</item>
+        <item>senegal</item>
+        <item>seychelles</item>
+        <item>sierra leone</item>
+        <item>somalia</item>
+        <item>south africa</item>
+        <item>south sudan</item>
+        <item>sudan</item>
+        <item>swaziland</item>
+        <item>tanzania</item>
+        <item>togo</item>
+        <item>tunisia</item>
+        <item>uganda</item>
         <item>zambia</item>
         <item>zimbabwe</item>
     </string-array>
+
+    <string-array name="north_america_flags">
+        <item>barbuda</item>
+        <item>bahamas</item>
+        <item>barbados</item>
+        <item>belize</item>
+        <item>canada</item>
+        <item>costa rica</item>
+        <item>cuba</item>
+        <item>dominica</item>
+        <item>el salvador</item>
+        <item>grenada</item>
+        <item>guatemala</item>
+        <item>haiti</item>
+        <item>honduras</item>
+        <item>jamaica</item>
+        <item>mexico</item>
+        <item>nicaragua</item>
+        <item>saint kitts and nevis</item>
+        <item>united states of america</item>
+    </string-array>
+
+    <string-array name="south_america_flags">
+        <item>argentina</item>
+        <item>bolivia</item>
+        <item>brazil</item>
+        <item>chile</item>
+        <item>colombia</item>
+        <item>dominican republic</item>
+        <item>ecuador</item>
+        <item>guyana</item>
+        <item>panama</item>
+        <item>paraguay</item>
+        <item>peru</item>
+        <item>saint lucia</item>
+        <item>saint vincent and the grenadines</item>
+        <item>suriname</item>
+        <item>trinidad and tobago</item>
+        <item>uruguay</item>
+        <item>venezuela</item>
+    </string-array>
+
+    <string-array name="oceania_flags">
+        <item>australia</item>
+        <item>east timor</item>
+        <item>fiji</item>
+        <item>kiribati</item>
+        <item>marshall islands</item>
+        <item>micronesia</item>
+        <item>nauru</item>
+        <item>new zealand</item>
+        <item>niue</item>
+        <item>palau</item>
+        <item>papua new guinea</item>
+        <item>samoa</item>
+        <item>solomon islands</item>
+        <item>tonga</item>
+        <item>tuvalu</item>
+    </string-array>
+
+    <string-array name="other_flags">
+        <item>russia</item>
+        <item>cyprus</item>
+    </string-array>
+
+
+
     <string name="title_activity_settings">Settings</string>
 
     <!-- Strings related to Settings -->

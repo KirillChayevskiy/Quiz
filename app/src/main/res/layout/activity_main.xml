@@ -9,7 +9,7 @@
     tools:layout_editor_absoluteY="25dp">
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/buttonStart"
         android:layout_width="368dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
@@ -31,14 +31,14 @@
         android:onClick="buttonSettingsClick"
         android:text="Настройка"
         android:textSize="20sp"
-        ads:layout_constraintBottom_toTopOf="@+id/button8"
-        ads:layout_constraintTop_toBottomOf="@+id/button"
+        ads:layout_constraintBottom_toTopOf="@+id/buttonRaiting"
+        ads:layout_constraintTop_toBottomOf="@+id/buttonStart"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent" />
 
     <Button
-        android:id="@+id/button8"
+        android:id="@+id/buttonRaiting"
         android:layout_width="336dp"
         android:layout_height="wrap_content"
         android:onClick="buttonRaitingClick"
@@ -61,7 +61,7 @@
         android:layout_marginStart="8dp"
         ads:adSize="BANNER"
         ads:adUnitId="@string/banner_ad_unit_id"
-        ads:layout_constraintTop_toBottomOf="@+id/button8"
+        ads:layout_constraintTop_toBottomOf="@+id/buttonRaiting"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"

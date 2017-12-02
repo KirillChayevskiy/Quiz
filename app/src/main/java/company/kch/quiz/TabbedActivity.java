@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.content.res.AssetManager;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
-import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Handler;
 import android.support.annotation.RequiresApi;
@@ -26,10 +25,18 @@ import android.view.ViewGroup;
 
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 
-import java.io.IOException;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
+import com.firebase.ui.storage.images.FirebaseImageLoader;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+
+
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
@@ -37,6 +44,29 @@ import java.util.Random;
 
 public class TabbedActivity extends AppCompatActivity {
 
+    public static final String ALL_FILE_NAME_LIST = "allFileNameList";
+    public static final String DATA_BASE_ARRAY = "dataBaseArray";
+    public static final String SELECTED_REGIONS = "selected_regions";
+
+    public static final String EUROPE_ARRAY = "europe_array";
+    public static final String ASIA_ARRAY = "asia_array";
+    public static final String AFRICA_ARRAY = "africa_array";
+    public static final String NORTH_AMERICA_ARRAY = "north_america_array";
+    public static final String SOUTH_AMERICA_ARRAY = "south_america_array";
+    public static final String OCEANIA_ARRAY = "oceania_array";
+    public static final String ALL_FLAGS_LIST = "allFlagsList";
+    public static final String RANDOMIZED_FLAGS_LIST = "randomizedFlagsList";
+    public static final String RANDOMIZED_FILE_NAME_LIST = "randomizedFileNameList";
+    public static final String ALL_FLAGS_LIST_FULL = "allFlagsListFull";
+    public static final String ALL_FILE_NAME_LIST_FULL = "allFileNameListFull";
+    public static final String READY_BOOLEAN = "readyBoolean";
+    public static final String RIGHT_ANSWER_BOOLEAN = "rightAnswerBoolean";
+    public static final String RANDOM_ANSWER_NUM = "randomAnswerNum";
+    public static final String ANSWER_NUM = "answerNum";
+    public static final String AUTO_PAGING = "autoPaging";
+
+    String[] allStringsOfRegions = new String[]{EUROPE_ARRAY, ASIA_ARRAY, AFRICA_ARRAY, NORTH_AMERICA_ARRAY, SOUTH_AMERICA_ARRAY, OCEANIA_ARRAY};
+    int[] regionStringsIDs = new int[]{R.array.europe_flags, R.array.asia_flags, R.array.africa_flags, R.array.north_america_flags, R.array.south_america_flags, R.array.oceania_flags};
     public static SectionsPagerAdapter mSectionsPagerAdapter;
     public static ViewPager mViewPager;
 
@@ -65,12 +95,20 @@ public class TabbedActivity extends AppCompatActivity {
 
     final String SAVED_NUM = "saved_num";
 
+    private static StorageReference mStorageRef;
+
+    boolean[] selectedRegions = new boolean[6];
+
+    static boolean autoPaging;
+
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tabbed);
+
+        autoPaging = getIntent().getBooleanExtra(AUTO_PAGING, true);
 
         //сброс
         for (int i = 0; i < 10; i++) {
@@ -81,42 +119,73 @@ public class TabbedActivity extends AppCompatActivity {
         intent = new Intent(TabbedActivity.this, MainActivity.class);
         builder = new AlertDialog.Builder(TabbedActivity.this);
 
-        allFileNameList.clear();
+        for (int i = 0; i < 6; i++) {
+            intent.putExtra(allStringsOfRegions[i], getIntent().getStringArrayExtra(allStringsOfRegions[i]));
+            intent.putExtra(SELECTED_REGIONS, selectedRegions);
+        }
+
         allFileNameListFull.clear();
-        allFlagsList.clear();
         allFlagsListFull.clear();
         randomizedFileNameList.clear();
         randomizedFlagsList.clear();
 
 
         loadNum = getIntent().getIntExtra(SAVED_NUM, 8);
+        selectedRegions = getIntent().getBooleanArrayExtra(SELECTED_REGIONS);
 
-        AssetManager assetManager = getApplicationContext().getAssets();
+        if (selectedRegions[0]) addValuesToArrays(R.array.europe_flags, EUROPE_ARRAY);
+        if (selectedRegions[1]) addValuesToArrays(R.array.asia_flags, ASIA_ARRAY);
+        if (selectedRegions[2]) addValuesToArrays(R.array.africa_flags, AFRICA_ARRAY);
+        if (selectedRegions[3]) addValuesToArrays(R.array.north_america_flags, NORTH_AMERICA_ARRAY);
+        if (selectedRegions[4]) addValuesToArrays(R.array.south_america_flags, SOUTH_AMERICA_ARRAY);
+        if (selectedRegions[5]) addValuesToArrays(R.array.oceania_flags, OCEANIA_ARRAY);
 
-        try {
-            allFileNameList.addAll(Arrays.asList(assetManager.list("AllNewFlags")));
-            allFileNameListFull.addAll(Arrays.asList(assetManager.list("AllNewFlags")));
-        } catch (IOException e) {
-            e.printStackTrace();
+
+        for (int i = 0; i < 6; i++) {
+            if (selectedRegions[i])
+                addValuesToFullArrays(regionStringsIDs[i], allStringsOfRegions[i]);
         }
 
-        Collections.addAll(allFlagsList, getResources().getStringArray(R.array.flag_names));
-        Collections.addAll(allFlagsListFull, getResources().getStringArray(R.array.flag_names));
-
-
+        if (selectedRegions[0] || selectedRegions[1]) {
+            allFileNameListFull.add("russia.png");
+            allFileNameListFull.add("cyprus.png");
+            Collections.addAll(allFlagsListFull, getResources().getStringArray(R.array.other_flags));
+        }
 
         Random random = new Random();
         for (int i = 0; i < 10; i++) {
-            for (int j = 0; j < loadNum; j++){
+            allFileNameList.clear();
+            allFlagsList.clear();
+            for (int k = 0; k < 6; k++) {
+                if (selectedRegions[k]) {
+                    addValuesToArrays(regionStringsIDs[k], allStringsOfRegions[k]);
+                    if (selectedRegions[0] || selectedRegions[1]) {
+                        allFileNameList.add("russia.png");
+                        allFileNameList.add("cyprus.png");
+                        Collections.addAll(allFlagsList, getResources().getStringArray(R.array.other_flags));
+                    }
+                }
+            }
+            for (int j = 0; j < loadNum; j++) {
                 int rand = random.nextInt(allFileNameList.size());
                 randomizedFileNameList.add(allFileNameList.get(rand));
                 randomizedFlagsList.add(allFlagsList.get(rand));
-                allFileNameList.remove(rand);
                 allFlagsList.remove(rand);
+                allFileNameList.remove(rand);
             }
-            randomAnswerNum[i] = random.nextInt(loadNum);
+            if (i > 0) {
+                boolean uniq = false;
+                while (!uniq) {
+                    randomAnswerNum[i] = random.nextInt(loadNum);
+                    for (int k = 0; k < i; k++) {
+                        if (randomizedFlagsList.get(k * loadNum + randomAnswerNum[k]).equals(randomizedFlagsList.get(i * loadNum + randomAnswerNum[i]))) {
+                            uniq = false;
+                            break;
+                        } else uniq = true;
+                    }
+                }
+            }
         }
-
 
 
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
@@ -125,7 +194,7 @@ public class TabbedActivity extends AppCompatActivity {
         tabLayout = (TabLayout) findViewById(R.id.tabs);
         mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(mViewPager));
-
+        mViewPager.setOffscreenPageLimit(10);
     }
 
 
@@ -151,28 +220,17 @@ public class TabbedActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
+
+    public void addValuesToArrays(int resourceStringArray, String intentStringArrayExtra) {
+        Collections.addAll(allFlagsList, getResources().getStringArray(resourceStringArray));
+        Collections.addAll(allFileNameList, getIntent().getStringArrayExtra(intentStringArrayExtra));
+
     }
 
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putStringArrayList("allFileNameList", (ArrayList<String>) allFileNameList);
+    public void addValuesToFullArrays(int resourceStringArray, String intentStringArrayExtra) {
+        Collections.addAll(allFileNameListFull, getIntent().getStringArrayExtra(intentStringArrayExtra));
+        Collections.addAll(allFlagsListFull, getResources().getStringArray(resourceStringArray));
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     public static class PlaceholderFragment extends Fragment {
@@ -182,8 +240,6 @@ public class TabbedActivity extends AppCompatActivity {
 
         public PlaceholderFragment() {
         }
-
-
 
 
         public static PlaceholderFragment newInstance(int sectionNumber) {
@@ -198,7 +254,7 @@ public class TabbedActivity extends AppCompatActivity {
             button.getBackground().setColorFilter(Color.parseColor(color), PorterDuff.Mode.MULTIPLY);
         }
 
-        public boolean checkReady(){
+        public boolean checkReady() {
             for (boolean b : ready) {
                 if (!b) {
                     return false;
@@ -213,6 +269,8 @@ public class TabbedActivity extends AppCompatActivity {
             final View rootView = inflater.inflate(R.layout.fragment_tabbed, container, false);
 
             final Button[] button = new Button[8];
+
+            final ProgressBar progressBar = (ProgressBar) rootView.findViewById(R.id.progressBar);
 
             int[] btn = new int[]{R.id.button0, R.id.button1, R.id.button2, R.id.button3, R.id.button4, R.id.button5, R.id.button6, R.id.button7};
             for (int i = 0; i < 8; i++) {
@@ -250,9 +308,10 @@ public class TabbedActivity extends AppCompatActivity {
 
             final Handler handler = new Handler();
 
-            for (int i = 0; i < loadNum; i++){
+            for (int i = 0; i < loadNum; i++) {
                 button[i] = (Button) rootView.findViewById(btn[i]);
                 button[i].setText(randomizedFlagsList.get((getArguments().getInt(ARG_SECTION_NUMBER) - 1) * loadNum + i));
+                button[i].setVisibility(View.INVISIBLE);
 
                 final int finalI = i;
 
@@ -260,7 +319,7 @@ public class TabbedActivity extends AppCompatActivity {
                 View.OnClickListener onClickListener = new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        if (finalI == randomAnswerNum[getArguments().getInt(ARG_SECTION_NUMBER) - 1]){
+                        if (finalI == randomAnswerNum[getArguments().getInt(ARG_SECTION_NUMBER) - 1]) {
                             colorizeButton(button[finalI], "#4CAF50");
                             rightAnswer[getArguments().getInt(ARG_SECTION_NUMBER) - 1] = true;
                             tabLayout.getTabAt(getArguments().getInt(ARG_SECTION_NUMBER) - 1).setIcon(R.drawable.ic_tab_yes);
@@ -278,18 +337,39 @@ public class TabbedActivity extends AppCompatActivity {
                         for (int i = 0; i < loadNum; i++) {
                             button[i].setEnabled(false);
                         }
-                        handler.postDelayed(new Runnable() {
-                                    @Override
-                                    public void run()
-                                    {
-                                        mViewPager.setCurrentItem(getArguments().getInt(ARG_SECTION_NUMBER));
+                        if (autoPaging) {
+                            for (int i = getArguments().getInt(ARG_SECTION_NUMBER) - 1; i < 10; i++) {
+                                if (!ready[i]){
+                                    final int finalI1 = i;
+                                    handler.postDelayed(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            mViewPager.setCurrentItem(finalI1);
+                                        }
+                                    }, 1200);
+                                    break;
+                                } else {
+                                    for (int j = getArguments().getInt(ARG_SECTION_NUMBER) - 1; j > 0 ; j--) {
+                                        if (!ready[j]){
+                                            final int finalJ = j;
+                                            handler.postDelayed(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    mViewPager.setCurrentItem(finalJ);
+                                                }
+                                            }, 1200);
+                                            break;
+                                        }
                                     }
-                        }, 1200);
+                                }
+                            }
+
+                        }
 
 
                         if (checkReady()) {
                             builder.setTitle("Результат")
-                                    .setMessage("Правильных ответов: " + countRightAnswer+ "\n")
+                                    .setMessage("Правильных ответов: " + countRightAnswer + "\n")
                                     .setCancelable(false)
                                     .setNegativeButton("OK",
                                             new DialogInterface.OnClickListener() {
@@ -306,26 +386,29 @@ public class TabbedActivity extends AppCompatActivity {
                 button[i].getId();
                 button[i].setOnClickListener(onClickListener);
             }
-
-            if (ready[getArguments().getInt(ARG_SECTION_NUMBER) - 1]) {
-                for (int i = 0; i < loadNum; i++) {
-                    button[i].setEnabled(false);
-                }
-
-                if (!rightAnswer[getArguments().getInt(ARG_SECTION_NUMBER) - 1]) {
-                    int numnum = answerNum[getArguments().getInt(ARG_SECTION_NUMBER) - 1];
-                    colorizeButton(button[numnum], "#F44336");
-                }
-                button[randomAnswerNum[getArguments().getInt(ARG_SECTION_NUMBER) - 1]].getBackground().setColorFilter(Color.parseColor("#4CAF50"), PorterDuff.Mode.MULTIPLY);
-            }
             for (int i = 0; i < allFlagsListFull.size(); i++) {
+
                 if (allFlagsListFull.get(i).contains((button[randomAnswerNum[getArguments().getInt(ARG_SECTION_NUMBER) - 1]]).getText())) {
-                    String answerStringOfPath = "AllNewFlags/" + allFileNameListFull.get(i);
-                    try {
-                        imageView.setImageDrawable(Drawable.createFromStream(assets.open(answerStringOfPath), ""));
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                    mStorageRef = FirebaseStorage.getInstance().getReference().child(allFileNameListFull.get(i));
+                    Glide.with(this)
+                            .using(new FirebaseImageLoader())
+                            .load(mStorageRef)
+                            .listener(new RequestListener<StorageReference, GlideDrawable>() {
+                                @Override
+                                public boolean onException(Exception e, StorageReference model, Target<GlideDrawable> target, boolean isFirstResource) {
+                                    return false;
+                                }
+
+                                @Override
+                                public boolean onResourceReady(GlideDrawable resource, StorageReference model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                                    progressBar.setVisibility(View.GONE);
+                                    for (int i = 0; i < loadNum; i++) {
+                                        button[i].setVisibility(View.VISIBLE);
+                                    }
+                                    return false;
+                                }
+                            })
+                            .into(imageView);
                     break;
                 }
             }
@@ -333,19 +416,7 @@ public class TabbedActivity extends AppCompatActivity {
         }
 
 
-
     }
-
-
-    public void clickButton (View view) {
-    }
-
-
-
-
-
-
-
 
 
 

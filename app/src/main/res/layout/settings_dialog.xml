@@ -10,7 +10,7 @@
         android:id="@+id/textViewTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
+        android:layout_marginStart="12dp"
         android:layout_marginTop="8dp"
         android:text="Настройки"
         android:textColor="@color/colorPrimary"
@@ -20,7 +20,7 @@
 
     <Button
         android:id="@+id/buttonOk"
-        android:layout_width="192dp"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:background="@android:color/white"
@@ -29,11 +29,11 @@
         app:layout_constraintEnd_toStartOf="@+id/buttonCancel"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/checkBox6" />
+        app:layout_constraintTop_toBottomOf="@+id/switch1" />
 
     <Button
         android:id="@+id/buttonCancel"
-        android:layout_width="192dp"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:background="@android:color/white"
@@ -42,59 +42,61 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/buttonOk"
-        app:layout_constraintTop_toBottomOf="@+id/checkBox6" />
+        app:layout_constraintTop_toBottomOf="@+id/switch1" />
 
     <CheckBox
-        android:id="@+id/checkBox6"
+        android:id="@+id/checkBoxOceania"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:checked="true"
-        android:enabled="false"
+        android:enabled="true"
         android:text="Океания"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/checkBox2" />
+        app:layout_constraintTop_toBottomOf="@+id/checkBoxSouthAmerica" />
 
     <CheckBox
-        android:id="@+id/checkBox1"
+        android:id="@+id/checkBoxEurope"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:checked="true"
-        android:enabled="false"
-        android:text="Южная Америка"
+        android:enabled="true"
+        android:text="Европа"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView4" />
 
     <CheckBox
-        android:id="@+id/checkBox2"
+        android:id="@+id/checkBoxSouthAmerica"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:checked="true"
-        android:enabled="false"
-        android:text="Африка"
+        android:enabled="true"
+        android:text="Южная Америка"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/checkBox4" />
+        app:layout_constraintTop_toBottomOf="@+id/checkBoxNothrAmerica" />
 
     <TextView
         android:id="@+id/textView4"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="12dp"
         android:text="Регионы"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView" />
 
     <SeekBar
         android:id="@+id/seekBar"
-        android:layout_width="300dp"
+        android:layout_width="280dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="17dp"
         android:layout_weight="1"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/textView"
         app:layout_constraintTop_toBottomOf="@+id/textView3" />
 
@@ -112,46 +114,60 @@
         app:layout_constraintTop_toBottomOf="@+id/textView3" />
 
     <CheckBox
-        android:id="@+id/checkBox4"
+        android:id="@+id/checkBoxNothrAmerica"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:checked="true"
-        android:enabled="false"
-        android:text="Азия"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/checkBox3" />
-
-    <CheckBox
-        android:id="@+id/checkBox5"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:checked="true"
-        android:enabled="false"
+        android:enabled="true"
         android:text="Северная Америка"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/checkBox1" />
+        app:layout_constraintTop_toBottomOf="@+id/checkBoxAfrica" />
+
+    <CheckBox
+        android:id="@+id/checkBoxAsia"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:checked="true"
+        android:enabled="true"
+        android:text="Азия"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/checkBoxEurope" />
 
     <TextView
         android:id="@+id/textView3"
         android:layout_width="match_parent"
         android:layout_height="23dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="12dp"
         android:text="Количество вариантов ответа"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textViewTitle" />
 
     <CheckBox
-        android:id="@+id/checkBox3"
+        android:id="@+id/checkBoxAfrica"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:checked="true"
-        android:enabled="false"
-        android:text="Европа"
+        android:enabled="true"
+        android:text="Африка"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/checkBox5" />
+        app:layout_constraintTop_toBottomOf="@+id/checkBoxAsia" />
+
+    <Switch
+        android:id="@+id/switch1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="12dp"
+        android:text="Автоматическое перелистывание"
+        android:textAppearance="@android:style/TextAppearance.Material.Small"
+        android:textColor="@color/common_google_signin_btn_text_light_default"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/checkBoxOceania" />
 
 </android.support.constraint.ConstraintLayout>
