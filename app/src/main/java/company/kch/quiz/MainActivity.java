@@ -30,7 +30,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    public static final String DATA_BASE_ARRAY = "dataBaseArray";
+
     public static final String TO_INTENT = "toIntent";
     public static final String EUROPE_ARRAY = "europe_array";
     public static final String ASIA_ARRAY = "asia_array";
@@ -52,8 +52,6 @@ public class MainActivity extends AppCompatActivity {
 
     boolean autoPaging = true;
 
-    String[] dbArray = null;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,47 +61,19 @@ public class MainActivity extends AppCompatActivity {
         AdRequest adRequest = new AdRequest.Builder().build();
         mAdView.loadAd(adRequest);
 
+        //Setting dialog
         dialog = new Dialog(MainActivity.this);
 
-        DatabaseReference myRef2 = FirebaseDatabase.getInstance().getReference().child("FileNameDB");
-        dbArray = new String[196];
-        for (int i = 0; i < 196; i++) {
-            final int finalI = i;
-            myRef2.child(String.valueOf(i)).addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    dbArray[finalI] = dataSnapshot.getValue(String.class);
-                }
-
-                @Override
-                public void onCancelled(DatabaseError error) {
-                    // Failed to read value
-                }
-            });
-        }
         for (int i = 0; i < 6; i++) {
             selectRegion[i] = true;
         }
         selectRegion = getIntent().getBooleanArrayExtra(SELECTED_REGIONS);
 
-        //selectRegion = getIntent().getBooleanArrayExtra(SELECTED_REGIONS);
-
-
-
-        //tested
-        //intent = new Intent(MainActivity.this, TabbedActivity.class);
-
-
-        //
-
-
     }
 
     public void buttonClick(View view) {
-        if (dbArray[195] != null) {
             intent = new Intent(MainActivity.this, TabbedActivity.class);
             intent.putExtra(SAVED_NUM, toIntent);
-            intent.putExtra(DATA_BASE_ARRAY, dbArray);
             intent.putExtra(EUROPE_ARRAY, getIntent().getStringArrayExtra(EUROPE_ARRAY));
             intent.putExtra(ASIA_ARRAY, getIntent().getStringArrayExtra(ASIA_ARRAY));
             intent.putExtra(AFRICA_ARRAY, getIntent().getStringArrayExtra(AFRICA_ARRAY));
@@ -113,16 +83,13 @@ public class MainActivity extends AppCompatActivity {
             intent.putExtra(SELECTED_REGIONS, selectRegion);
             intent.putExtra(AUTO_PAGING, autoPaging);
             startActivity(intent);
-        } else {
-            showToast("Повторите попытку позже");
-        }
     }
 
     public void buttonSettingsClick(View view) {
         dialog.setContentView(R.layout.settings_dialog);
         dialog.setCancelable(false);
         final TextView textView = (TextView) dialog.findViewById(R.id.textView);
-        textView.setText(String.format("%d", toIntent));
+        textView.setText(String.valueOf(toIntent));
         SeekBar seekBar = (SeekBar) dialog.findViewById(R.id.seekBar);
         seekBar.setMax(3);
         seekBar.setProgress((toIntent - 2)/2);
@@ -145,19 +112,12 @@ public class MainActivity extends AppCompatActivity {
                 textView.setText(String.valueOf(2 + progress * 2));
             }
         });
-        final CheckBox checkBoxEurope = (CheckBox) dialog.findViewById(R.id.checkBoxEurope);
-        final CheckBox checkBoxAsia = (CheckBox) dialog.findViewById(R.id.checkBoxAsia);
-        final CheckBox checkBoxAfrica = (CheckBox) dialog.findViewById(R.id.checkBoxAfrica);
-        final CheckBox checkBoxNothrAmerica = (CheckBox) dialog.findViewById(R.id.checkBoxNothrAmerica);
-        final CheckBox checkBoxSouthAmerica = (CheckBox) dialog.findViewById(R.id.checkBoxSouthAmerica);
-        final CheckBox checkBoxOceania = (CheckBox) dialog.findViewById(R.id.checkBoxOceania);
-
-        checkBoxEurope.setChecked(selectRegion[0]);
-        checkBoxAsia.setChecked(selectRegion[1]);
-        checkBoxAfrica.setChecked(selectRegion[2]);
-        checkBoxNothrAmerica.setChecked(selectRegion[3]);
-        checkBoxSouthAmerica.setChecked(selectRegion[4]);
-        checkBoxOceania.setChecked(selectRegion[5]);
+        final CheckBox[] checkBoxes = new CheckBox[6];
+        int[] checkBoxIDs = new int[] {R.id.checkBoxEurope, R.id.checkBoxAsia, R.id.checkBoxAfrica, R.id.checkBoxNothrAmerica, R.id.checkBoxSouthAmerica, R.id.checkBoxOceania};
+        for (int i =0; i < 6; i++) {
+            checkBoxes[i] = dialog.findViewById(checkBoxIDs[i]);
+            checkBoxes[i].setChecked(selectRegion[i]);
+        }
 
         final Switch switch1 = (Switch) dialog .findViewById(R.id.switch1);
         switch1.setChecked(autoPaging);
@@ -170,17 +130,11 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (v.getId() == R.id.buttonOk) {
                     toIntent = Integer.parseInt(textView.getText().toString());
-                    selectRegion[0] = checkBoxEurope.isChecked();
-                    selectRegion[1] = checkBoxAsia.isChecked();
-                    selectRegion[2] = checkBoxAfrica.isChecked();
-                    selectRegion[3] = checkBoxNothrAmerica.isChecked();
-                    selectRegion[4] = checkBoxSouthAmerica.isChecked();
-                    selectRegion[5] = checkBoxOceania.isChecked();
                     boolean check = false;
                     for (int i = 0; i < 6; i++) {
+                        selectRegion[i] = checkBoxes[i].isChecked();
                         if (selectRegion[i]) {
                             check = true;
-                            break;
                         }
                     }
                     autoPaging = switch1.isChecked();
@@ -191,7 +145,6 @@ public class MainActivity extends AppCompatActivity {
         };
         buttonOk.setOnClickListener(onClickListener);
         buttonCancel.setOnClickListener(onClickListener);
-
         dialog.show();
     }
 

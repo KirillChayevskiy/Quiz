@@ -8,6 +8,7 @@ import android.graphics.PorterDuff;
 import android.os.Build;
 import android.os.Handler;
 import android.support.annotation.RequiresApi;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -46,8 +47,6 @@ import java.util.TimerTask;
 
 public class TabbedActivity extends AppCompatActivity {
 
-    public static final String ALL_FILE_NAME_LIST = "allFileNameList";
-    public static final String DATA_BASE_ARRAY = "dataBaseArray";
     public static final String SELECTED_REGIONS = "selected_regions";
 
     public static final String EUROPE_ARRAY = "europe_array";
@@ -56,15 +55,6 @@ public class TabbedActivity extends AppCompatActivity {
     public static final String NORTH_AMERICA_ARRAY = "north_america_array";
     public static final String SOUTH_AMERICA_ARRAY = "south_america_array";
     public static final String OCEANIA_ARRAY = "oceania_array";
-    public static final String ALL_FLAGS_LIST = "allFlagsList";
-    public static final String RANDOMIZED_FLAGS_LIST = "randomizedFlagsList";
-    public static final String RANDOMIZED_FILE_NAME_LIST = "randomizedFileNameList";
-    public static final String ALL_FLAGS_LIST_FULL = "allFlagsListFull";
-    public static final String ALL_FILE_NAME_LIST_FULL = "allFileNameListFull";
-    public static final String READY_BOOLEAN = "readyBoolean";
-    public static final String RIGHT_ANSWER_BOOLEAN = "rightAnswerBoolean";
-    public static final String RANDOM_ANSWER_NUM = "randomAnswerNum";
-    public static final String ANSWER_NUM = "answerNum";
     public static final String AUTO_PAGING = "autoPaging";
 
     String[] allStringsOfRegions = new String[]{EUROPE_ARRAY, ASIA_ARRAY, AFRICA_ARRAY, NORTH_AMERICA_ARRAY, SOUTH_AMERICA_ARRAY, OCEANIA_ARRAY};
@@ -105,6 +95,7 @@ public class TabbedActivity extends AppCompatActivity {
 
     static int testInt = 0;
 
+    static FloatingActionButton fab50x50;
 
 
     @RequiresApi(api = Build.VERSION_CODES.N)
@@ -113,11 +104,9 @@ public class TabbedActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tabbed);
 
-
-
-
-
         autoPaging = getIntent().getBooleanExtra(AUTO_PAGING, true);
+
+        fab50x50 = findViewById(R.id.floatingActionButton);
 
         //сброс
         for (int i = 0; i < 10; i++) {
@@ -133,7 +122,6 @@ public class TabbedActivity extends AppCompatActivity {
             intent.putExtra(SELECTED_REGIONS, selectedRegions);
         }
 
-
         allFileNameListFull.clear();
         allFlagsListFull.clear();
         randomizedFileNameList.clear();
@@ -144,10 +132,8 @@ public class TabbedActivity extends AppCompatActivity {
         selectedRegions = getIntent().getBooleanArrayExtra(SELECTED_REGIONS);
 
 
-
-
         for (int i = 0; i < 6; i++) {
-            if (selectedRegions[i]){
+            if (selectedRegions[i]) {
                 addValuesToArrays(regionStringsIDs[i], allStringsOfRegions[i]);
                 addValuesToFullArrays(regionStringsIDs[i], allStringsOfRegions[i]);
             }
@@ -181,6 +167,7 @@ public class TabbedActivity extends AppCompatActivity {
                 allFlagsList.remove(rand);
                 allFileNameList.remove(rand);
             }
+
             if (i > 0) {
                 boolean uniq = false;
                 while (!uniq) {
@@ -192,7 +179,7 @@ public class TabbedActivity extends AppCompatActivity {
                         } else uniq = true;
                     }
                 }
-            }
+            } else randomAnswerNum[i] = random.nextInt(loadNum);
         }
 
 
@@ -210,6 +197,8 @@ public class TabbedActivity extends AppCompatActivity {
                 testInt++;
             }
         }, 0, 100);
+
+
     }
 
 
@@ -253,6 +242,10 @@ public class TabbedActivity extends AppCompatActivity {
 
         private static final String ARG_SECTION_NUMBER = "section_number";
 
+        Button[] button = new Button[8];
+        int[] btn = new int[]{R.id.button0, R.id.button1, R.id.button2, R.id.button3, R.id.button4, R.id.button5, R.id.button6, R.id.button7};
+
+
         public PlaceholderFragment() {
         }
 
@@ -279,18 +272,17 @@ public class TabbedActivity extends AppCompatActivity {
         }
 
         @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            final View rootView = inflater.inflate(R.layout.fragment_tabbed, container, false);
+        public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
+                                 final Bundle savedInstanceState) {
+            View rootView = inflater.inflate(R.layout.fragment_tabbed, container, false);
 
-            final Button[] button = new Button[8];
 
             final ProgressBar progressBar = (ProgressBar) rootView.findViewById(R.id.progressBar);
 
-            int[] btn = new int[]{R.id.button0, R.id.button1, R.id.button2, R.id.button3, R.id.button4, R.id.button5, R.id.button6, R.id.button7};
             for (int i = 0; i < 8; i++) {
-                button[i] = (Button) rootView.findViewById(btn[i]);
+                button[i] = rootView.findViewById(btn[i]);
             }
+
             switch (loadNum) {
                 case 6:
                     button[0].setVisibility(View.GONE);
@@ -305,6 +297,7 @@ public class TabbedActivity extends AppCompatActivity {
                     btn = new int[]{R.id.button1, R.id.button3, R.id.button5, R.id.button7};
                     break;
                 case 2:
+                    fab50x50.setVisibility(View.INVISIBLE);
                     button[0].setVisibility(View.GONE);
                     button[1].setVisibility(View.GONE);
                     button[2].setVisibility(View.GONE);
@@ -316,20 +309,39 @@ public class TabbedActivity extends AppCompatActivity {
                     btn = new int[]{R.id.button5, R.id.button7};
                     break;
             }
-            ImageView imageView = (ImageView) rootView.findViewById(R.id.imageView);
 
+            final int[] finalBtn = btn;
 
-            AssetManager assets = getActivity().getAssets();
+            fab50x50.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    List<Integer> fiftyFifty = new ArrayList<>();
+                    for (int i = 0; i < loadNum; i++) {
+                        fiftyFifty.add(i);
+                    }
+                    fiftyFifty.remove(randomAnswerNum[mViewPager.getCurrentItem()]);
+                    Random random = new Random();
+                    for (int i = 0; i < (loadNum / 2) - 1; i++) {
+                        fiftyFifty.remove(random.nextInt(fiftyFifty.size()));
+                    }
+                    for (int i = 0; i < loadNum; i++) {
+                        button[i] = mViewPager.getChildAt(mViewPager.getCurrentItem()).findViewById(finalBtn[i]);
+                    }
+                    for (int i = 0; i < fiftyFifty.size(); i++) {
+                        button[fiftyFifty.get(i)].setVisibility(View.INVISIBLE);
+                    }
+                    fab50x50.setVisibility(View.INVISIBLE);
+                }
+            });
 
-            final Handler handler = new Handler();
+            ImageView imageView = rootView.findViewById(R.id.imageView);
 
             for (int i = 0; i < loadNum; i++) {
-                button[i] = (Button) rootView.findViewById(btn[i]);
+                button[i] = rootView.findViewById(btn[i]);
                 button[i].setText(randomizedFlagsList.get((getArguments().getInt(ARG_SECTION_NUMBER) - 1) * loadNum + i));
                 button[i].setVisibility(View.INVISIBLE);
 
                 final int finalI = i;
-
 
                 View.OnClickListener onClickListener = new View.OnClickListener() {
                     @Override
@@ -353,8 +365,9 @@ public class TabbedActivity extends AppCompatActivity {
                             button[i].setEnabled(false);
                         }
                         if (autoPaging) {
+                            final Handler handler = new Handler();
                             for (int i = getArguments().getInt(ARG_SECTION_NUMBER) - 1; i < 10; i++) {
-                                if (!ready[i]){
+                                if (!ready[i]) {
                                     final int finalI1 = i;
                                     handler.postDelayed(new Runnable() {
                                         @Override
@@ -364,8 +377,8 @@ public class TabbedActivity extends AppCompatActivity {
                                     }, 1200);
                                     break;
                                 } else {
-                                    for (int j = getArguments().getInt(ARG_SECTION_NUMBER) - 1; j > 0 ; j--) {
-                                        if (!ready[j]){
+                                    for (int j = getArguments().getInt(ARG_SECTION_NUMBER) - 1; j > 0; j--) {
+                                        if (!ready[j]) {
                                             final int finalJ = j;
                                             handler.postDelayed(new Runnable() {
                                                 @Override
@@ -378,14 +391,12 @@ public class TabbedActivity extends AppCompatActivity {
                                     }
                                 }
                             }
-
                         }
-
 
                         if (checkReady()) {
                             builder.setTitle("Результат")
                                     .setMessage("Правильных ответов: " + countRightAnswer + "\n"
-                                            +"Test: " + testInt + "\n")
+                                            + "Test: " + testInt + "\n")
                                     .setCancelable(false)
                                     .setNegativeButton("OK",
                                             new DialogInterface.OnClickListener() {
@@ -404,7 +415,6 @@ public class TabbedActivity extends AppCompatActivity {
                 button[i].setOnClickListener(onClickListener);
             }
             for (int i = 0; i < allFlagsListFull.size(); i++) {
-
                 if (allFlagsListFull.get(i).contains((button[randomAnswerNum[getArguments().getInt(ARG_SECTION_NUMBER) - 1]]).getText())) {
                     mStorageRef = FirebaseStorage.getInstance().getReference().child(allFileNameListFull.get(i));
                     Glide.with(this)
@@ -431,10 +441,7 @@ public class TabbedActivity extends AppCompatActivity {
             }
             return rootView;
         }
-
-
     }
-
 
 
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
@@ -456,6 +463,7 @@ public class TabbedActivity extends AppCompatActivity {
             return 10;
         }
     }
+
     @Override
     public void onBackPressed() {
         // super.onBackPressed();
@@ -465,9 +473,9 @@ public class TabbedActivity extends AppCompatActivity {
     private void openQuitDialog() {
         AlertDialog.Builder quitDialog = new AlertDialog.Builder(
                 TabbedActivity.this);
-        quitDialog.setTitle("Выход: Вы уверены?");
-
-        quitDialog.setPositiveButton("Таки да!", new DialogInterface.OnClickListener() {
+        quitDialog.setTitle("Закончить игру?");
+        quitDialog.setMessage("Весь прогресс будет утерян!");
+        quitDialog.setPositiveButton("Да", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 // TODO Auto-generated method stub
