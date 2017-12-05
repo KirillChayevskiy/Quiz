@@ -8,6 +8,7 @@ import android.net.NetworkInfo;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.SeekBar;
@@ -83,6 +84,8 @@ public class MainActivity extends AppCompatActivity {
         for (int i = 0; i < 6; i++) {
             selectRegion[i] = true;
         }
+        selectRegion = getIntent().getBooleanArrayExtra(SELECTED_REGIONS);
+
         //selectRegion = getIntent().getBooleanArrayExtra(SELECTED_REGIONS);
 
 
@@ -101,12 +104,12 @@ public class MainActivity extends AppCompatActivity {
             intent = new Intent(MainActivity.this, TabbedActivity.class);
             intent.putExtra(SAVED_NUM, toIntent);
             intent.putExtra(DATA_BASE_ARRAY, dbArray);
-            if (selectRegion[0])  intent.putExtra(EUROPE_ARRAY, getIntent().getStringArrayExtra(EUROPE_ARRAY));
-            if (selectRegion[1]) intent.putExtra(ASIA_ARRAY, getIntent().getStringArrayExtra(ASIA_ARRAY));
-            if (selectRegion[2]) intent.putExtra(AFRICA_ARRAY, getIntent().getStringArrayExtra(AFRICA_ARRAY));
-            if (selectRegion[3]) intent.putExtra(NORTH_AMERICA_ARRAY, getIntent().getStringArrayExtra(NORTH_AMERICA_ARRAY));
-            if (selectRegion[4]) intent.putExtra(SOUTH_AMERICA_ARRAY, getIntent().getStringArrayExtra(SOUTH_AMERICA_ARRAY));
-            if (selectRegion[5]) intent.putExtra(OCEANIA_ARRAY, getIntent().getStringArrayExtra(OCEANIA_ARRAY));
+            intent.putExtra(EUROPE_ARRAY, getIntent().getStringArrayExtra(EUROPE_ARRAY));
+            intent.putExtra(ASIA_ARRAY, getIntent().getStringArrayExtra(ASIA_ARRAY));
+            intent.putExtra(AFRICA_ARRAY, getIntent().getStringArrayExtra(AFRICA_ARRAY));
+            intent.putExtra(NORTH_AMERICA_ARRAY, getIntent().getStringArrayExtra(NORTH_AMERICA_ARRAY));
+            intent.putExtra(SOUTH_AMERICA_ARRAY, getIntent().getStringArrayExtra(SOUTH_AMERICA_ARRAY));
+            intent.putExtra(OCEANIA_ARRAY, getIntent().getStringArrayExtra(OCEANIA_ARRAY));
             intent.putExtra(SELECTED_REGIONS, selectRegion);
             intent.putExtra(AUTO_PAGING, autoPaging);
             startActivity(intent);
@@ -142,7 +145,6 @@ public class MainActivity extends AppCompatActivity {
                 textView.setText(String.valueOf(2 + progress * 2));
             }
         });
-
         final CheckBox checkBoxEurope = (CheckBox) dialog.findViewById(R.id.checkBoxEurope);
         final CheckBox checkBoxAsia = (CheckBox) dialog.findViewById(R.id.checkBoxAsia);
         final CheckBox checkBoxAfrica = (CheckBox) dialog.findViewById(R.id.checkBoxAfrica);
@@ -194,7 +196,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void buttonRaitingClick(View view) {
-
+        intent = new Intent(MainActivity.this, RaitingActivity.class);
+        startActivity(intent);
     }
 
     public void buttonTestClick(View view) {

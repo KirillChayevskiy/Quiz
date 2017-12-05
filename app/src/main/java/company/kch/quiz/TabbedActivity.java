@@ -40,6 +40,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
 
 
 public class TabbedActivity extends AppCompatActivity {
@@ -101,12 +103,19 @@ public class TabbedActivity extends AppCompatActivity {
 
     static boolean autoPaging;
 
+    static int testInt = 0;
+
+
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tabbed);
+
+
+
+
 
         autoPaging = getIntent().getBooleanExtra(AUTO_PAGING, true);
 
@@ -124,6 +133,7 @@ public class TabbedActivity extends AppCompatActivity {
             intent.putExtra(SELECTED_REGIONS, selectedRegions);
         }
 
+
         allFileNameListFull.clear();
         allFlagsListFull.clear();
         randomizedFileNameList.clear();
@@ -133,17 +143,15 @@ public class TabbedActivity extends AppCompatActivity {
         loadNum = getIntent().getIntExtra(SAVED_NUM, 8);
         selectedRegions = getIntent().getBooleanArrayExtra(SELECTED_REGIONS);
 
-        if (selectedRegions[0]) addValuesToArrays(R.array.europe_flags, EUROPE_ARRAY);
-        if (selectedRegions[1]) addValuesToArrays(R.array.asia_flags, ASIA_ARRAY);
-        if (selectedRegions[2]) addValuesToArrays(R.array.africa_flags, AFRICA_ARRAY);
-        if (selectedRegions[3]) addValuesToArrays(R.array.north_america_flags, NORTH_AMERICA_ARRAY);
-        if (selectedRegions[4]) addValuesToArrays(R.array.south_america_flags, SOUTH_AMERICA_ARRAY);
-        if (selectedRegions[5]) addValuesToArrays(R.array.oceania_flags, OCEANIA_ARRAY);
+
 
 
         for (int i = 0; i < 6; i++) {
-            if (selectedRegions[i])
+            if (selectedRegions[i]){
+                addValuesToArrays(regionStringsIDs[i], allStringsOfRegions[i]);
                 addValuesToFullArrays(regionStringsIDs[i], allStringsOfRegions[i]);
+            }
+
         }
 
         if (selectedRegions[0] || selectedRegions[1]) {
@@ -195,6 +203,13 @@ public class TabbedActivity extends AppCompatActivity {
         mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(mViewPager));
         mViewPager.setOffscreenPageLimit(10);
+        Timer timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                testInt++;
+            }
+        }, 0, 100);
     }
 
 
@@ -369,12 +384,14 @@ public class TabbedActivity extends AppCompatActivity {
 
                         if (checkReady()) {
                             builder.setTitle("Результат")
-                                    .setMessage("Правильных ответов: " + countRightAnswer + "\n")
+                                    .setMessage("Правильных ответов: " + countRightAnswer + "\n"
+                                            +"Test: " + testInt + "\n")
                                     .setCancelable(false)
                                     .setNegativeButton("OK",
                                             new DialogInterface.OnClickListener() {
                                                 @Override
                                                 public void onClick(DialogInterface dialog, int which) {
+
                                                     startActivity(intent);
                                                 }
                                             });
@@ -438,5 +455,37 @@ public class TabbedActivity extends AppCompatActivity {
             // Show 10 total pages.
             return 10;
         }
+    }
+    @Override
+    public void onBackPressed() {
+        // super.onBackPressed();
+        openQuitDialog();
+    }
+
+    private void openQuitDialog() {
+        AlertDialog.Builder quitDialog = new AlertDialog.Builder(
+                TabbedActivity.this);
+        quitDialog.setTitle("Выход: Вы уверены?");
+
+        quitDialog.setPositiveButton("Таки да!", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // TODO Auto-generated method stub
+                for (int i = 0; i < 6; i++) {
+                    intent.putExtra(allStringsOfRegions[i], getIntent().getStringArrayExtra(allStringsOfRegions[i]));
+                    intent.putExtra(SELECTED_REGIONS, selectedRegions);
+                }
+                startActivity(intent);
+            }
+        });
+
+        quitDialog.setNegativeButton("Нет", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // TODO Auto-generated method stub
+            }
+        });
+
+        quitDialog.show();
     }
 }

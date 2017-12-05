@@ -23,6 +23,8 @@ import java.util.List;
 
 public class LoadingActivity extends AppCompatActivity {
 
+    public static final String SELECTED_REGIONS = "selected_regions";
+
     String[] fileNamesEurope;
     String[] fileNamesAsia;
     String[] fileNamesAfrica;
@@ -34,6 +36,7 @@ public class LoadingActivity extends AppCompatActivity {
     DatabaseReference databaseReference;
     Intent intent;
     TextView textView;
+    boolean[] selectedRegions = new boolean[6];
 
 
     @Override
@@ -73,6 +76,10 @@ public class LoadingActivity extends AppCompatActivity {
                         intent.putExtra("north_america_array", fileNamesNorthAmerica);
                         intent.putExtra("south_america_array", fileNamesSouthAmerica);
                         intent.putExtra("oceania_array", fileNamesOceania);
+                        for (int i = 0; i < 6; i++){
+                            selectedRegions[i] = true;
+                        }
+                        intent.putExtra(SELECTED_REGIONS, selectedRegions);
                         startActivity(intent);
                     }
                 }
@@ -86,3 +93,5 @@ public class LoadingActivity extends AppCompatActivity {
         return fileNames;
     }
 }
+
+
