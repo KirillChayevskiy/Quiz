@@ -2,7 +2,6 @@ package company.kch.quiz;
 
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.AssetManager;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.os.Build;
@@ -27,12 +26,18 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.firebase.ui.storage.images.FirebaseImageLoader;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -48,7 +53,6 @@ import java.util.TimerTask;
 public class TabbedActivity extends AppCompatActivity {
 
     public static final String SELECTED_REGIONS = "selected_regions";
-
     public static final String EUROPE_ARRAY = "europe_array";
     public static final String ASIA_ARRAY = "asia_array";
     public static final String AFRICA_ARRAY = "africa_array";
@@ -56,15 +60,15 @@ public class TabbedActivity extends AppCompatActivity {
     public static final String SOUTH_AMERICA_ARRAY = "south_america_array";
     public static final String OCEANIA_ARRAY = "oceania_array";
     public static final String AUTO_PAGING = "autoPaging";
+    public static final String USER_ID = "userID";
 
     String[] allStringsOfRegions = new String[]{EUROPE_ARRAY, ASIA_ARRAY, AFRICA_ARRAY, NORTH_AMERICA_ARRAY, SOUTH_AMERICA_ARRAY, OCEANIA_ARRAY};
     int[] regionStringsIDs = new int[]{R.array.europe_flags, R.array.asia_flags, R.array.africa_flags, R.array.north_america_flags, R.array.south_america_flags, R.array.oceania_flags};
+
     public static SectionsPagerAdapter mSectionsPagerAdapter;
     public static ViewPager mViewPager;
-
     static TabLayout tabLayout;
 
-    static int countRightAnswer;
     static List<String> allFileNameList = new ArrayList<>();
     static List<String> allFlagsList = new ArrayList<>();
 
@@ -87,13 +91,20 @@ public class TabbedActivity extends AppCompatActivity {
 
     final String SAVED_NUM = "saved_num";
 
+    static String userID;
+
     private static StorageReference mStorageRef;
 
     boolean[] selectedRegions = new boolean[6];
 
     static boolean autoPaging;
 
-    static int testInt = 0;
+    static int time;
+    static int diffLevel = 0;
+    static double hintUse = 1;
+    static int previousScore = 0;
+    static int countRightAnswer;
+
 
     static FloatingActionButton fab50x50;
 
@@ -113,6 +124,7 @@ public class TabbedActivity extends AppCompatActivity {
             ready[i] = false;
         }
         countRightAnswer = 0;
+        time = 0;
 
         intent = new Intent(TabbedActivity.this, MainActivity.class);
         builder = new AlertDialog.Builder(TabbedActivity.this);
@@ -126,6 +138,8 @@ public class TabbedActivity extends AppCompatActivity {
         allFlagsListFull.clear();
         randomizedFileNameList.clear();
         randomizedFlagsList.clear();
+
+        userID = getIntent().getStringExtra(USER_ID);
 
 
         loadNum = getIntent().getIntExtra(SAVED_NUM, 8);
@@ -153,13 +167,14 @@ public class TabbedActivity extends AppCompatActivity {
             for (int k = 0; k < 6; k++) {
                 if (selectedRegions[k]) {
                     addValuesToArrays(regionStringsIDs[k], allStringsOfRegions[k]);
-                    if (selectedRegions[0] || selectedRegions[1]) {
-                        allFileNameList.add("russia.png");
-                        allFileNameList.add("cyprus.png");
-                        Collections.addAll(allFlagsList, getResources().getStringArray(R.array.other_flags));
-                    }
                 }
             }
+            if (selectedRegions[0] || selectedRegions[1]) {
+                allFileNameList.add("russia.png");
+                allFileNameList.add("cyprus.png");
+                Collections.addAll(allFlagsList, getResources().getStringArray(R.array.other_flags));
+            }
+            diffLevel = allFlagsList.size();
             for (int j = 0; j < loadNum; j++) {
                 int rand = random.nextInt(allFileNameList.size());
                 randomizedFileNameList.add(allFileNameList.get(rand));
@@ -184,19 +199,39 @@ public class TabbedActivity extends AppCompatActivity {
 
 
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
-        mViewPager = (ViewPager) findViewById(R.id.container);
+        mViewPager = findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
-        tabLayout = (TabLayout) findViewById(R.id.tabs);
+        tabLayout = findViewById(R.id.tabs);
         mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(mViewPager));
         mViewPager.setOffscreenPageLimit(10);
-        Timer timer = new Timer();
+        final Timer timer = new Timer();
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                testInt++;
+                time++;
             }
-        }, 0, 100);
+        }, 0, 1000);
+        if (userID != null) {
+            final DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("Rating").child(userID).child("score");
+            reference.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.getValue(Integer.class) == null) previousScore = 0;
+                     else previousScore = dataSnapshot.getValue(Integer.class);
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+        }
+
+        for (int i = 0; i < 6; i++) {
+            intent.putExtra(allStringsOfRegions[i], getIntent().getStringArrayExtra(allStringsOfRegions[i]));
+            intent.putExtra(SELECTED_REGIONS, selectedRegions);
+        }
 
 
     }
@@ -262,14 +297,7 @@ public class TabbedActivity extends AppCompatActivity {
             button.getBackground().setColorFilter(Color.parseColor(color), PorterDuff.Mode.MULTIPLY);
         }
 
-        public boolean checkReady() {
-            for (boolean b : ready) {
-                if (!b) {
-                    return false;
-                }
-            }
-            return true;
-        }
+
 
         @Override
         public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
@@ -331,6 +359,7 @@ public class TabbedActivity extends AppCompatActivity {
                         button[fiftyFifty.get(i)].setVisibility(View.INVISIBLE);
                     }
                     fab50x50.setVisibility(View.INVISIBLE);
+                    hintUse = 0.95;
                 }
             });
 
@@ -374,7 +403,7 @@ public class TabbedActivity extends AppCompatActivity {
                                         public void run() {
                                             mViewPager.setCurrentItem(finalI1);
                                         }
-                                    }, 1200);
+                                    }, 1000);
                                     break;
                                 } else {
                                     for (int j = getArguments().getInt(ARG_SECTION_NUMBER) - 1; j > 0; j--) {
@@ -385,24 +414,30 @@ public class TabbedActivity extends AppCompatActivity {
                                                 public void run() {
                                                     mViewPager.setCurrentItem(finalJ);
                                                 }
-                                            }, 1200);
+                                            }, 1000);
                                             break;
                                         }
                                     }
                                 }
                             }
                         }
-
                         if (checkReady()) {
-                            builder.setTitle("Результат")
-                                    .setMessage("Правильных ответов: " + countRightAnswer + "\n"
-                                            + "Test: " + testInt + "\n")
-                                    .setCancelable(false)
-                                    .setNegativeButton("OK",
+
+                            final int resultScore = (int) ((double) countRightAnswer / time * diffLevel * ((double) loadNum / 10 + 1) * hintUse * 100);
+                            if (userID != null && previousScore < resultScore) {
+                                final DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("Rating").child(userID).child("score");
+                                reference.setValue(resultScore);
+                                builder.setTitle("Новый рекорд!");
+                            } else builder.setTitle("Результат");
+
+                            builder.setMessage("Правильных ответов: " + countRightAnswer + "\n"
+                                            + "Очки: " + resultScore +"\n"
+                                            + "Время: " + time + "\n");
+                            builder.setCancelable(true);
+                            builder.setPositiveButton("Главное меню",
                                             new DialogInterface.OnClickListener() {
                                                 @Override
                                                 public void onClick(DialogInterface dialog, int which) {
-
                                                     startActivity(intent);
                                                 }
                                             });
@@ -414,12 +449,12 @@ public class TabbedActivity extends AppCompatActivity {
                 button[i].getId();
                 button[i].setOnClickListener(onClickListener);
             }
+            mStorageRef = FirebaseStorage.getInstance().getReference();
             for (int i = 0; i < allFlagsListFull.size(); i++) {
                 if (allFlagsListFull.get(i).contains((button[randomAnswerNum[getArguments().getInt(ARG_SECTION_NUMBER) - 1]]).getText())) {
-                    mStorageRef = FirebaseStorage.getInstance().getReference().child(allFileNameListFull.get(i));
                     Glide.with(this)
                             .using(new FirebaseImageLoader())
-                            .load(mStorageRef)
+                            .load(mStorageRef.child(allFileNameListFull.get(i)))
                             .listener(new RequestListener<StorageReference, GlideDrawable>() {
                                 @Override
                                 public boolean onException(Exception e, StorageReference model, Target<GlideDrawable> target, boolean isFirstResource) {
@@ -464,10 +499,19 @@ public class TabbedActivity extends AppCompatActivity {
         }
     }
 
+    public static boolean checkReady() {
+        for (boolean b : ready) {
+            if (!b) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     @Override
     public void onBackPressed() {
-        // super.onBackPressed();
-        openQuitDialog();
+        if (checkReady()) startActivity(intent);
+        else openQuitDialog();
     }
 
     private void openQuitDialog() {
@@ -479,10 +523,7 @@ public class TabbedActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 // TODO Auto-generated method stub
-                for (int i = 0; i < 6; i++) {
-                    intent.putExtra(allStringsOfRegions[i], getIntent().getStringArrayExtra(allStringsOfRegions[i]));
-                    intent.putExtra(SELECTED_REGIONS, selectedRegions);
-                }
+
                 startActivity(intent);
             }
         });
@@ -495,5 +536,13 @@ public class TabbedActivity extends AppCompatActivity {
         });
 
         quitDialog.show();
+    }
+
+    //Текстовое уведомление
+    public void showToast(String message) {
+        //создаем и отображаем текстовое уведомление
+        Toast toast = Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT);
+        //toast.setGravity(Gravity.TOP, 0, 80);
+        toast.show();
     }
 }
