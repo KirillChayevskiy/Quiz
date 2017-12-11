@@ -33,6 +33,9 @@ import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.firebase.ui.storage.images.FirebaseImageLoader;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -43,7 +46,9 @@ import com.google.firebase.storage.StorageReference;
 
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
 import java.util.Timer;
@@ -69,8 +74,8 @@ public class TabbedActivity extends AppCompatActivity {
     public static ViewPager mViewPager;
     static TabLayout tabLayout;
 
-    static List<String> allFileNameList = new ArrayList<>();
-    static List<String> allFlagsList = new ArrayList<>();
+    List<String> allFileNameList = new ArrayList<>();
+    List<String> allFlagsList = new ArrayList<>();
 
     static List<String> allFileNameListFull = new ArrayList<>();
     static List<String> allFlagsListFull = new ArrayList<>();
@@ -99,12 +104,17 @@ public class TabbedActivity extends AppCompatActivity {
 
     static boolean autoPaging;
 
-    static int time;
+    static boolean checkStartTime = false;
     static int diffLevel = 0;
     static double hintUse = 1;
     static int previousScore = 0;
     static int countRightAnswer;
 
+    static Date currentTime;
+    static long timeStart = 0;
+    static long timeEnd = 0;
+
+    private AdView mAdView;
 
     static FloatingActionButton fab50x50;
 
@@ -115,6 +125,12 @@ public class TabbedActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tabbed);
 
+        mAdView = (AdView) findViewById(R.id.adView);
+
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
+        MobileAds.initialize(this, "ca-app-pub-2992417291220561~7365486410");
+
         autoPaging = getIntent().getBooleanExtra(AUTO_PAGING, true);
 
         fab50x50 = findViewById(R.id.floatingActionButton);
@@ -124,7 +140,6 @@ public class TabbedActivity extends AppCompatActivity {
             ready[i] = false;
         }
         countRightAnswer = 0;
-        time = 0;
 
         intent = new Intent(TabbedActivity.this, MainActivity.class);
         builder = new AlertDialog.Builder(TabbedActivity.this);
@@ -143,6 +158,7 @@ public class TabbedActivity extends AppCompatActivity {
 
 
         loadNum = getIntent().getIntExtra(SAVED_NUM, 8);
+        intent.putExtra(SAVED_NUM, loadNum);
         selectedRegions = getIntent().getBooleanArrayExtra(SELECTED_REGIONS);
 
 
@@ -155,8 +171,7 @@ public class TabbedActivity extends AppCompatActivity {
         }
 
         if (selectedRegions[0] || selectedRegions[1]) {
-            allFileNameListFull.add("russia.png");
-            allFileNameListFull.add("cyprus.png");
+            Collections.addAll(allFileNameListFull, getResources().getStringArray(R.array.other_file_names));
             Collections.addAll(allFlagsListFull, getResources().getStringArray(R.array.other_flags));
         }
 
@@ -170,8 +185,7 @@ public class TabbedActivity extends AppCompatActivity {
                 }
             }
             if (selectedRegions[0] || selectedRegions[1]) {
-                allFileNameList.add("russia.png");
-                allFileNameList.add("cyprus.png");
+                Collections.addAll(allFileNameList, getResources().getStringArray(R.array.other_file_names));
                 Collections.addAll(allFlagsList, getResources().getStringArray(R.array.other_flags));
             }
             diffLevel = allFlagsList.size();
@@ -205,13 +219,7 @@ public class TabbedActivity extends AppCompatActivity {
         mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(mViewPager));
         mViewPager.setOffscreenPageLimit(10);
-        final Timer timer = new Timer();
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                time++;
-            }
-        }, 0, 1000);
+        final Handler handlerTime = new Handler();
         if (userID != null) {
             final DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("Rating").child(userID).child("score");
             reference.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -232,7 +240,9 @@ public class TabbedActivity extends AppCompatActivity {
             intent.putExtra(allStringsOfRegions[i], getIntent().getStringArrayExtra(allStringsOfRegions[i]));
             intent.putExtra(SELECTED_REGIONS, selectedRegions);
         }
+        if (userID != null) if (userID.equals(getString(R.string.admin_userID))) mAdView.setVisibility(View.GONE);
 
+        checkStartTime = false;
 
     }
 
@@ -293,8 +303,8 @@ public class TabbedActivity extends AppCompatActivity {
             return fragment;
         }
 
-        public void colorizeButton(Button button, String color) {
-            button.getBackground().setColorFilter(Color.parseColor(color), PorterDuff.Mode.MULTIPLY);
+        public void colorizeButton(Button button, int color) {
+            button.getBackground().setColorFilter(getResources().getColor(color), PorterDuff.Mode.MULTIPLY);
         }
 
 
@@ -376,14 +386,14 @@ public class TabbedActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
                         if (finalI == randomAnswerNum[getArguments().getInt(ARG_SECTION_NUMBER) - 1]) {
-                            colorizeButton(button[finalI], "#4CAF50");
+                            colorizeButton(button[finalI], R.color.colorRightAnsweer);
                             rightAnswer[getArguments().getInt(ARG_SECTION_NUMBER) - 1] = true;
                             tabLayout.getTabAt(getArguments().getInt(ARG_SECTION_NUMBER) - 1).setIcon(R.drawable.ic_tab_yes);
                             tabLayout.getTabAt(getArguments().getInt(ARG_SECTION_NUMBER) - 1).setText("");
                             countRightAnswer++;
                         } else {
-                            colorizeButton(button[finalI], "#F44336");
-                            colorizeButton(button[randomAnswerNum[getArguments().getInt(ARG_SECTION_NUMBER) - 1]], "#4CAF50");
+                            colorizeButton(button[finalI], R.color.colorWrongAnsweer);
+                            colorizeButton(button[randomAnswerNum[getArguments().getInt(ARG_SECTION_NUMBER) - 1]], R.color.colorRightAnsweer);
                             rightAnswer[getArguments().getInt(ARG_SECTION_NUMBER) - 1] = false;
                             answerNum[getArguments().getInt(ARG_SECTION_NUMBER) - 1] = finalI;
                             tabLayout.getTabAt(getArguments().getInt(ARG_SECTION_NUMBER) - 1).setIcon(R.drawable.ic_tab_no);
@@ -393,8 +403,9 @@ public class TabbedActivity extends AppCompatActivity {
                         for (int i = 0; i < loadNum; i++) {
                             button[i].setEnabled(false);
                         }
+                        final Handler handler = new Handler();
                         if (autoPaging) {
-                            final Handler handler = new Handler();
+
                             for (int i = getArguments().getInt(ARG_SECTION_NUMBER) - 1; i < 10; i++) {
                                 if (!ready[i]) {
                                     final int finalI1 = i;
@@ -422,27 +433,35 @@ public class TabbedActivity extends AppCompatActivity {
                             }
                         }
                         if (checkReady()) {
+                            handler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    currentTime = Calendar.getInstance().getTime();
+                                    timeEnd = currentTime.getTime();
+                                    final int resultScore = (int) ((double) countRightAnswer / ((timeEnd-timeStart)/1000) * ((double) diffLevel/10) * ((double) loadNum / 10 + 1) * hintUse * 100);
+                                    if (userID != null && previousScore < resultScore) {
+                                        final DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("Rating").child(userID).child("score");
+                                        reference.setValue(resultScore);
+                                        builder.setTitle(R.string.new_record_title);
+                                    } else builder.setTitle(R.string.result_title);
 
-                            final int resultScore = (int) ((double) countRightAnswer / time * diffLevel * ((double) loadNum / 10 + 1) * hintUse * 100);
-                            if (userID != null && previousScore < resultScore) {
-                                final DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("Rating").child(userID).child("score");
-                                reference.setValue(resultScore);
-                                builder.setTitle("Новый рекорд!");
-                            } else builder.setTitle("Результат");
-
-                            builder.setMessage("Правильных ответов: " + countRightAnswer + "\n"
-                                            + "Очки: " + resultScore +"\n"
-                                            + "Время: " + time + "\n");
-                            builder.setCancelable(true);
-                            builder.setPositiveButton("Главное меню",
+                                    builder.setMessage(getString(R.string.right_answer_count_text)+ "" + countRightAnswer + "\n"
+                                            + getString(R.string.score_text) + resultScore +"\n"
+                                            + getString(R.string.time_score)+ ((timeEnd-timeStart)/1000) + "\n");
+                                    builder.setCancelable(true);
+                                    builder.setPositiveButton(R.string.main_menu_button,
                                             new DialogInterface.OnClickListener() {
                                                 @Override
                                                 public void onClick(DialogInterface dialog, int which) {
                                                     startActivity(intent);
                                                 }
                                             });
-                            AlertDialog alertDialog = builder.create();
-                            alertDialog.show();
+                                    AlertDialog alertDialog = builder.create();
+                                    alertDialog.show();
+                                }
+                            }, 1000);
+
+
                         }
                     }
                 };
@@ -466,6 +485,11 @@ public class TabbedActivity extends AppCompatActivity {
                                     progressBar.setVisibility(View.GONE);
                                     for (int i = 0; i < loadNum; i++) {
                                         button[i].setVisibility(View.VISIBLE);
+                                    }
+                                    if (!checkStartTime) {
+                                        currentTime = Calendar.getInstance().getTime();
+                                        timeStart = currentTime.getTime();
+                                        checkStartTime = true;
                                     }
                                     return false;
                                 }
@@ -517,9 +541,9 @@ public class TabbedActivity extends AppCompatActivity {
     private void openQuitDialog() {
         AlertDialog.Builder quitDialog = new AlertDialog.Builder(
                 TabbedActivity.this);
-        quitDialog.setTitle("Закончить игру?");
-        quitDialog.setMessage("Весь прогресс будет утерян!");
-        quitDialog.setPositiveButton("Да", new DialogInterface.OnClickListener() {
+        quitDialog.setTitle(R.string.back_button_title);
+        quitDialog.setMessage(R.string.back_button_message);
+        quitDialog.setPositiveButton(R.string.yes_button, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 // TODO Auto-generated method stub
@@ -528,7 +552,7 @@ public class TabbedActivity extends AppCompatActivity {
             }
         });
 
-        quitDialog.setNegativeButton("Нет", new DialogInterface.OnClickListener() {
+        quitDialog.setNegativeButton(R.string.no_button, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 // TODO Auto-generated method stub

@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="12dp"
         android:layout_marginTop="8dp"
-        android:text="Настройки"
+        android:text="@string/settings_button"
         android:textColor="@color/colorPrimary"
         android:textSize="25sp"
         app:layout_constraintStart_toStartOf="parent"
@@ -24,7 +24,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:background="@android:color/white"
-        android:text="Ок"
+        android:text="@string/ok_button"
         android:textColor="@color/colorPrimary"
         app:layout_constraintEnd_toStartOf="@+id/buttonCancel"
         app:layout_constraintHorizontal_bias="0.5"
@@ -37,7 +37,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:background="@android:color/white"
-        android:text="Отмена"
+        android:text="@string/cancel_button"
         android:textColor="@color/colorPrimary"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
@@ -51,7 +51,7 @@
         android:layout_marginStart="8dp"
         android:checked="true"
         android:enabled="true"
-        android:text="Океания"
+        android:text="@string/oceania_region_checkbox"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/checkBoxSouthAmerica" />
 
@@ -63,7 +63,7 @@
         android:layout_marginTop="8dp"
         android:checked="true"
         android:enabled="true"
-        android:text="Европа"
+        android:text="@string/europe_region_checkbox"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView4" />
 
@@ -74,7 +74,7 @@
         android:layout_marginStart="8dp"
         android:checked="true"
         android:enabled="true"
-        android:text="Южная Америка"
+        android:text="@string/south_america_region_checkbox"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/checkBoxNothrAmerica" />
 
@@ -84,7 +84,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="12dp"
-        android:text="Регионы"
+        android:text="@string/regions_text"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView" />
 
@@ -107,7 +107,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
         android:layout_weight="1"
-        android:text="0"
+        android:text=""
         android:textColor="@color/colorAccent"
         android:textSize="25sp"
         app:layout_constraintStart_toStartOf="parent"
@@ -120,7 +120,7 @@
         android:layout_marginStart="8dp"
         android:checked="true"
         android:enabled="true"
-        android:text="Северная Америка"
+        android:text="@string/north_america_region_checkbox"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/checkBoxAfrica" />
 
@@ -131,7 +131,7 @@
         android:layout_marginStart="8dp"
         android:checked="true"
         android:enabled="true"
-        android:text="Азия"
+        android:text="@string/asia_region_checkbox"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/checkBoxEurope" />
 
@@ -140,9 +140,10 @@
         android:layout_width="match_parent"
         android:layout_height="23dp"
         android:layout_marginStart="8dp"
-        android:text="Количество вариантов ответа"
+        android:layout_marginTop="8dp"
+        android:text="@string/num_of_resp_opt_text"
         app:layout_constraintStart_toStartOf="parent"
-        tools:layout_editor_absoluteY="54dp" />
+        app:layout_constraintTop_toBottomOf="@+id/textViewTitle" />
 
     <CheckBox
         android:id="@+id/checkBoxAfrica"
@@ -151,7 +152,7 @@
         android:layout_marginStart="8dp"
         android:checked="true"
         android:enabled="true"
-        android:text="Африка"
+        android:text="@string/africa_region_checkbox"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/checkBoxAsia" />
 
@@ -162,7 +163,7 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="12dp"
-        android:text="Автоматическое перелистывание"
+        android:text="@string/auto_paging_switch"
         android:textAppearance="@android:style/TextAppearance.Material.Small"
         android:textColor="@color/common_google_signin_btn_text_light_default"
         app:layout_constraintEnd_toEndOf="parent"

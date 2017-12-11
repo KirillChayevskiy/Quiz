@@ -3,6 +3,26 @@
     <string name="app_name">Quiz</string>
     <string name="wrong">Ошибка!</string>
     <string name="correctly">Правильно!</string>
+    <string name="about_large_text">В этой игре вам необходимо угадывать название страны по флагу. В конце игры вы получаете очки. Величина полученных очков зависит от количества правильных ответов, скорости игры, количества регионов, количества вариантов ответа и использования подсказки. Затем наибол</string>
+    <string name="toast_null_region_selected">Не выбрано ни одного региона</string>
+    <string name="about">Об игре</string>
+    <string name="start_button">Начать игру</string>
+    <string name="settings_button">Настройки</string>
+    <string name="rating_button">Рейтинг игроков</string>
+    <string name="exit_google_button">Выйти</string>
+    <string name="ok_button">Ок</string>
+    <string name="cancel_button">Отмена</string>
+    <string name="oceania_region_checkbox">Океания</string>
+    <string name="europe_region_checkbox">Европа</string>
+    <string name="south_america_region_checkbox">Южная Америка</string>
+    <string name="regions_text">Регионы</string>
+    <string name="north_america_region_checkbox">Северная Америка</string>
+    <string name="asia_region_checkbox">Азия</string>
+    <string name="num_of_resp_opt_text">Количество вариантов ответа</string>
+    <string name="africa_region_checkbox">Африка</string>
+    <string name="auto_paging_switch">Автоматическое перелистывание</string>
+    <string name="loading_text">Загрузка</string>
+    <string name="rating_text">" Рейтинг"</string>
 
     <string-array name="europe_flags">
         <item>Албания</item>
@@ -220,5 +240,16 @@
         <item>Россия</item>
         <item>Кипр</item>
     </string-array>
+    <string name="toast_short_name">Слишком короткое имя</string>
+    <string name="new_record_title">Новый рекорд!</string>
+    <string name="result_title">Результат</string>
+    <string name="right_answer_count_text">Правильных ответов:</string>
+    <string name="score_text">Очки:</string>
+    <string name="time_score">Время:</string>
+    <string name="main_menu_button">Главное меню</string>
+    <string name="back_button_title">Закончить игру?</string>
+    <string name="back_button_message">Весь прогресс будет утерян!</string>
+    <string name="yes_button">Да</string>
+    <string name="no_button">Нет</string>
 
 </resources>

@@ -3,6 +3,7 @@ package company.kch.quiz;
 import android.app.Dialog;
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,7 +18,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -43,10 +46,10 @@ import com.google.firebase.database.ValueEventListener;
 public class MainActivity extends AppCompatActivity {
 
     public static final String USER_ID = "userID";
+    public static final String LOAD_NUM = "loadNum";
     //Google Registration in Firebase
     SignInButton signInButton;
     Button signOutButton;
-    private GoogleApiClient mGoogleApiClient;
     GoogleSignInClient mGoogleSignInClient;
     EditText editTextGoogleName;
 
@@ -54,9 +57,8 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseAuth.AuthStateListener mAuthListener;
     private static final int RC_SIGN_IN = 1;
 
-    private static final String TAG = "MAIN_ACTIVITY";
 
-    public static final String TO_INTENT = "toIntent";
+
     public static final String EUROPE_ARRAY = "europe_array";
     public static final String ASIA_ARRAY = "asia_array";
     public static final String AFRICA_ARRAY = "africa_array";
@@ -75,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
 
     Dialog dialog;
     Intent intent;
-    int toIntent = 8;
+    int loadNum;
 
     boolean autoPaging = true;
 
@@ -87,9 +89,11 @@ public class MainActivity extends AppCompatActivity {
         mAdView = (AdView) findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().build();
         mAdView.loadAd(adRequest);
+        MobileAds.initialize(this, getString(R.string.initializeADsID));
 
         //Setting dialog
         dialog = new Dialog(MainActivity.this);
+        loadNum = getIntent().getIntExtra(SAVED_NUM, 8);
 
         for (int i = 0; i < 6; i++) {
             selectRegion[i] = true;
@@ -109,10 +113,10 @@ public class MainActivity extends AppCompatActivity {
                 .build();
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
         signInButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                signIn();
-            }
+                @Override
+                public void onClick(View v) {
+                    signIn();
+                }
         });
         final DatabaseReference myRef = FirebaseDatabase.getInstance().getReference("Rating");
         mAuthListener = new FirebaseAuth.AuthStateListener() {
@@ -135,6 +139,8 @@ public class MainActivity extends AppCompatActivity {
                         }
                     });
                     userID = mAuth.getUid();
+                    if (userID.equals(getString(R.string.Admin_ID_without_ADs))) mAdView.setVisibility(View.GONE);
+
                 }
             }
         };
@@ -142,12 +148,11 @@ public class MainActivity extends AppCompatActivity {
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 if(event.getAction() == KeyEvent.ACTION_DOWN && (keyCode == KeyEvent.KEYCODE_ENTER)) {
                     if (editTextGoogleName.getText().length() < 4) {
-                        showToast("Слишком короткое имя");
+                        showToast(getString(R.string.toast_short_name));
                     } else {
                         myRef.child(mAuth.getUid()).child("name").setValue(editTextGoogleName.getText().toString());
                         editTextGoogleName.setText("");
                     }
-                    String strCatName = editTextGoogleName.getText().toString();
                     return true;
                 }
                 return false;
@@ -187,8 +192,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
-        Log.d(TAG, "firebaseAuthWithGoogle:" + acct.getId());
-
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
         mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -196,11 +199,9 @@ public class MainActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
-                            Log.d(TAG, "signInWithCredential:success");
                             FirebaseUser user = mAuth.getCurrentUser();
                         } else {
                             // If sign in fails, display a message to the user.
-                            Log.w(TAG, "signInWithCredential:failure", task.getException());
                             Toast.makeText(MainActivity.this, "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
                         }
@@ -212,6 +213,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void onClickExitButton (View view) {
         FirebaseAuth.getInstance().signOut();
+        mGoogleSignInClient.signOut();
         signInButton.setVisibility(View.VISIBLE);
         signOutButton.setVisibility(View.INVISIBLE);
         userID = null;
@@ -220,7 +222,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void buttonClick(View view) {
             intent = new Intent(MainActivity.this, TabbedActivity.class);
-            intent.putExtra(SAVED_NUM, toIntent);
+            intent.putExtra(SAVED_NUM, loadNum);
             intent.putExtra(EUROPE_ARRAY, getIntent().getStringArrayExtra(EUROPE_ARRAY));
             intent.putExtra(ASIA_ARRAY, getIntent().getStringArrayExtra(ASIA_ARRAY));
             intent.putExtra(AFRICA_ARRAY, getIntent().getStringArrayExtra(AFRICA_ARRAY));
@@ -237,10 +239,10 @@ public class MainActivity extends AppCompatActivity {
         dialog.setContentView(R.layout.settings_dialog);
         dialog.setCancelable(false);
         final TextView textView = (TextView) dialog.findViewById(R.id.textView);
-        textView.setText(String.valueOf(toIntent));
+        textView.setText(String.valueOf(loadNum));
         SeekBar seekBar = (SeekBar) dialog.findViewById(R.id.seekBar);
         seekBar.setMax(3);
-        seekBar.setProgress((toIntent - 2)/2);
+        seekBar.setProgress((loadNum - 2)/2);
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 
             @Override
@@ -277,7 +279,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (v.getId() == R.id.buttonOk) {
-                    toIntent = Integer.parseInt(textView.getText().toString());
+                    loadNum = Integer.parseInt(textView.getText().toString());
                     boolean check = false;
                     for (int i = 0; i < 6; i++) {
                         selectRegion[i] = checkBoxes[i].isChecked();
@@ -287,7 +289,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                     autoPaging = switch1.isChecked();
                     if (check) dialog.cancel();
-                    else showToast("Не выбрано ниодного региона");
+                    else showToast(getString(R.string.toast_null_region_selected));
                 } else dialog.cancel();
             }
         };
@@ -296,18 +298,21 @@ public class MainActivity extends AppCompatActivity {
         dialog.show();
     }
 
+    @Override
+    public void onBackPressed() {
+
+    }
+
     public void buttonRaitingClick(View view) {
         intent = new Intent(MainActivity.this, RaitingActivity.class);
         startActivity(intent);
     }
 
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-        toIntent = savedInstanceState.getInt(TO_INTENT);
-    }
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putInt(TO_INTENT, toIntent);
+    public void buttonAboutClick (View view) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        builder.setTitle(R.string.about).setCancelable(true).setMessage(R.string.about_large_text);
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
     }
 
 

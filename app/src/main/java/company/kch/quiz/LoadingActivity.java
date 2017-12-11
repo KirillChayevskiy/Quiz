@@ -45,8 +45,8 @@ public class LoadingActivity extends AppCompatActivity {
         setContentView(R.layout.activity_loading);
         databaseReference = FirebaseDatabase.getInstance().getReference();
         intent = new Intent(LoadingActivity.this, MainActivity.class);
-        progressBar = (ProgressBar) findViewById(R.id.progressBar);
-        textView = (TextView) findViewById(R.id.textView);
+        progressBar = findViewById(R.id.progressBar);
+        textView = findViewById(R.id.textView);
 
         fileNamesEurope = getArrayFileNamesOfRegion("Europe", getResources().getStringArray(R.array.europe_flags).length);
         fileNamesAsia = getArrayFileNamesOfRegion("Asia", getResources().getStringArray(R.array.asia_flags).length);
@@ -68,7 +68,7 @@ public class LoadingActivity extends AppCompatActivity {
                     fileNames[finalI] = dataSnapshot.getValue(String.class);
                     checkTest++;
                     progressBar.setProgress(checkTest);
-                    textView.setText("Загрузка");
+                    textView.setText(getString(R.string.loading_text));
                     if (checkTest == 194) {
                         intent.putExtra("europe_array", fileNamesEurope);
                         intent.putExtra("asia_array", fileNamesAsia);
@@ -86,7 +86,6 @@ public class LoadingActivity extends AppCompatActivity {
 
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
-                    textView.setText("Нет подключения к интернету");
                 }
             });
         }

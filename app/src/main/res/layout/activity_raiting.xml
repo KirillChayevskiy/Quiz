@@ -10,9 +10,9 @@
     <TextView
         android:id="@+id/textView5"
         android:layout_width="0dp"
-        android:layout_height="40dp"
+        android:layout_height="45dp"
         android:background="@color/colorButton"
-        android:text="Рейтинг"
+        android:text="@string/rating_text"
         android:textAlignment="center"
         android:textColor="@android:color/white"
         android:textSize="30sp"
